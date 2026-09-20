@@ -15,6 +15,8 @@ from tqdm import tqdm
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from data.synthetic_mimic import SyntheticMIMICDataset
+from data.mimic_loader import RealMIMICDataset
+from data.open_benchmark_loader import OpenClinicalBenchmarkDataset
 from models.tabular import TabularMLP, XGBoostWrapper, LightGBMWrapper
 from models.imaging import DenseNet121Classifier, ViTClassifier
 from models.fusion import LateFusionModel
@@ -177,6 +179,9 @@ def run_single_fold(fold_idx, train_indices, val_indices, dataset, config, devic
 
 def main():
     parser = argparse.ArgumentParser()
+    parser.add_argument('--dataset', type=str, default='synthetic', choices=['synthetic', 'mimic', 'open_benchmark'])
+    parser.add_argument('--cohort_csv', type=str, default=None, help='Path to real MIMIC or CheXpert cohort metadata CSV')
+    parser.add_argument('--image_dir', type=str, default=None, help='Path to chest radiograph image folder')
     parser.add_argument('--model', type=str, default='all')
     parser.add_argument('--n_samples', type=int, default=3000)
     parser.add_argument('--epochs', type=int, default=30)
@@ -191,7 +196,20 @@ def main():
     device = get_device()
     os.makedirs(args.output_dir, exist_ok=True)
     
-    dataset = SyntheticMIMICDataset(n_samples=args.n_samples)
+    if args.dataset == 'mimic':
+        if not args.cohort_csv or not args.image_dir:
+            raise ValueError("For --dataset mimic, you must provide --cohort_csv and --image_dir")
+        print(f"Loading Real MIMIC dataset from: {args.cohort_csv}")
+        dataset = RealMIMICDataset(cohort_csv_path=args.cohort_csv, cxr_image_dir=args.image_dir, seed=args.seed)
+    elif args.dataset == 'open_benchmark':
+        if not args.cohort_csv or not args.image_dir:
+            raise ValueError("For --dataset open_benchmark, you must provide --cohort_csv and --image_dir")
+        print(f"Loading Open Clinical Benchmark dataset from: {args.cohort_csv}")
+        dataset = OpenClinicalBenchmarkDataset(metadata_csv_path=args.cohort_csv, image_root_dir=args.image_dir, seed=args.seed)
+    else:
+        print(f"Loading Synthetic MIMIC benchmark cohort (N={args.n_samples})")
+        dataset = SyntheticMIMICDataset(n_samples=args.n_samples, seed=args.seed)
+        
     labels = [dataset[i]['label'].item() for i in range(len(dataset))]
     skf = StratifiedKFold(n_splits=args.n_folds, shuffle=True, random_state=args.seed)
     

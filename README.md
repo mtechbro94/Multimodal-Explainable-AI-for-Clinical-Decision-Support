@@ -78,9 +78,38 @@ pip install -r src/requirements.txt
 ```
 
 ### 2. Training
-To train all models across 5-fold stratified cross-validation:
+
+#### A. Rapid Demonstration / Synthetic Benchmark
 ```bash
-python src/train.py --model all --n_samples 3000 --epochs 30 --n_folds 5 --output_dir results
+python src/train.py --dataset synthetic --model all --n_samples 3000 --epochs 30 --n_folds 5 --output_dir results
+```
+
+#### B. Real PhysioNet MIMIC-IV + MIMIC-CXR-JPG (Gold-Standard Publication Benchmark)
+1. Run `scripts/extract_mimic_cohort.sql` in Google BigQuery to extract the matched cohort CSV.
+2. Download or link your PhysioNet `mimic-cxr-jpg/2.0.0/files` image directory.
+3. Train models directly on real patient data:
+```bash
+python src/train.py \
+  --dataset mimic \
+  --cohort_csv /path/to/mimic_matched_cohort.csv \
+  --image_dir /path/to/mimic-cxr-jpg/2.0.0/files \
+  --model all \
+  --epochs 30 \
+  --n_folds 5 \
+  --output_dir results
+```
+
+#### C. Immediate Open-Access Benchmark (Stanford CheXpert / Kaggle)
+For training on real patient imaging immediately without PhysioNet DUA credentialing:
+```bash
+python src/train.py \
+  --dataset open_benchmark \
+  --cohort_csv /path/to/chexpert_train.csv \
+  --image_dir /path/to/chexpert_images/ \
+  --model all \
+  --epochs 30 \
+  --n_folds 5 \
+  --output_dir results
 ```
 
 ### 3. Evaluation & Ablation
