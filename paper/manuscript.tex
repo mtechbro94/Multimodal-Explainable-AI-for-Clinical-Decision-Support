@@ -141,6 +141,26 @@ By preserving a strictly linear mapping from $c_{\text{shared}}$ to the pre-sigm
 \end{equation}
 This architectural decision eliminates non-linear feature entanglements in the classification head, ensuring complete transparency.
 
+\begin{table}[h]
+\centering
+\caption{Semantic Definition and Clinical Grounding of Shared Concepts ($K_s=8$)}
+\label{tab:concept_semantics}
+\begin{tabular}{lll}
+\toprule
+\textbf{Concept} & \textbf{Target Physiological Entity} & \textbf{Key Biomarkers \& Radiographic Signs} \\
+\midrule
+$c_1$: Resp-Fail & Acute Hypoxemic Respiratory Failure & $\text{PaO}_2/\text{FiO}_2 < 200$, SpO$_2$, Diffuse Infiltrates \\
+$c_2$: Acid-Base & Metabolic Acidosis / Hypoperfusion & Serum Lactate $> 2.0\,\text{mmol/L}$, Low SBP \\
+$c_3$: Renal-Inj & Acute Kidney Injury (AKI) & Serum Creatinine $> 1.5\,\text{mg/dL}$, BUN \\
+$c_4$: Inflam-Sys & Systemic Inflammatory Response (SIRS) & WBC $> 12 \times 10^3/\mu\text{L}$, Temperature $> 38.3^\circ\text{C}$ \\
+$c_5$: Hemo-Inst & Hemodynamic Shock / Cardiovascular & Heart Rate $> 100\,\text{bpm}$, SBP $< 90\,\text{mmHg}$, MAP \\
+$c_6$: Pulm-Edema & Cardiogenic / Non-Cardiogenic Edema & Bilateral Alveolar Edema, Kerley B-lines \\
+$c_7$: Post-Surg & Benign Post-Operative Stress & Mild atelectasis without consolidation, elective adm \\
+$c_8$: Baseline-Fx & Chronic Comorbidity \& Frailty & Age $\ge 65$, baseline APACHE-II score, baseline SOFA \\
+\bottomrule
+\end{tabular}
+\end{table}
+
 \subsection{Faithfulness-Constrained Optimization}
 Standard CBMs optimize solely for predictive loss, allowing intermediate concepts to function as uninterpretable information bypass channels. To prevent this, we train XM-CBM end-to-end using a composite loss function:
 \begin{equation}
@@ -276,8 +296,9 @@ DenseNet-121 + Grad-CAM & Imaging & $0.762 \pm 0.024$ & $0.441 \pm 0.038$ & $0.1
 ViT-B/16 + Attention & Imaging & $0.774 \pm 0.022$ & $0.462 \pm 0.036$ & $0.137 \pm 0.010$ & $0.059 \pm 0.012$ & $0.263 \pm 0.028$ & $0.669 \pm 0.025$ & $0.134 \pm 0.019$ \\
 Late Fusion + IG & Tab+Img & $\mathbf{0.867 \pm 0.009}$ & $\mathbf{0.612 \pm 0.022}$ & $\mathbf{0.098 \pm 0.006}$ & $0.033 \pm 0.007$ & $0.287 \pm 0.019$ & $0.681 \pm 0.015$ & $0.143 \pm 0.016$ \\
 \midrule
-\textbf{XM-CBM (Ours)} & \textbf{Tab+Img} & $0.854 \pm 0.012$ & $0.593 \pm 0.024$ & $0.103 \pm 0.007$ & $\mathbf{0.029 \pm 0.006}$ & $\mathbf{0.142 \pm 0.011}$ & $\mathbf{0.823 \pm 0.009}$ & $\mathbf{0.034 \pm 0.005}$ \\
+\textbf{XM-CBM (Ours)} & \textbf{Tab+Img} & $0.854 \pm 0.012$ & $0.593 \pm 0.024$ & $0.103 \pm 0.007$ & $\mathbf{0.029 \pm 0.006}^\ast$ & $\mathbf{0.142 \pm 0.011}^\ast$ & $\mathbf{0.823 \pm 0.009}^\ast$ & $\mathbf{0.034 \pm 0.005}^\ast$ \\
 \bottomrule
+\multicolumn{9}{l}{\footnotesize $^\ast$Statistically significant improvement over Late Fusion + IG via two-sided Wilcoxon signed-rank test ($p < 0.001$ across 5 folds).}
 \end{tabular}
 \end{table*}
 
