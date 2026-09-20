@@ -96,6 +96,27 @@ $$\hat{y} = \sigma(w^\top c_{\text{shared}} + b) \quad (8)$$
 
 The linear prediction head is the key design choice. We enforce this strict linearity because it ensures that the contribution of each concept to the final prediction is exactly $w_i \cdot c_i^{\text{shared}}$. This provides a mathematically complete and transparent decomposition of the decision. There are no hidden non-linearities to obscure the reasoning.
 
+| Concept | Target Physiological Entity | Key Biomarkers & Radiographic Signs |
+| :--- | :--- | :--- |
+| $c_1$: Resp-Fail | Acute Hypoxemic Respiratory Failure | $\text{PaO}_2/\text{FiO}_2 < 200$, $\text{SpO}_2$, Diffuse Infiltrates |
+| $c_2$: Acid-Base | Metabolic Acidosis / Hypoperfusion | Serum Lactate $> 2.0\,\text{mmol/L}$, Low SBP |
+| $c_3$: Renal-Inj | Acute Kidney Injury (AKI) | Serum Creatinine $> 1.5\,\text{mg/dL}$, BUN |
+| $c_4$: Inflam-Sys | Systemic Inflammatory Response (SIRS) | WBC $> 12 \times 10^3/\mu\text{L}$, Temperature $> 38.3^\circ\text{C}$ |
+| $c_5$: Hemo-Inst | Hemodynamic Shock / Cardiovascular | Heart Rate $> 100\,\text{bpm}$, SBP $< 90\,\text{mmHg}$, MAP |
+| $c_6$: Pulm-Edema | Cardiogenic / Non-Cardiogenic Edema | Bilateral Alveolar Edema, Kerley B-lines |
+| $c_7$: Post-Surg | Benign Post-Operative Stress | Mild atelectasis without consolidation, elective adm |
+| $c_8$: Baseline-Fx | Chronic Comorbidity & Frailty | Age $\ge 65$, baseline APACHE-II score, baseline SOFA |
+
+#### Human-in-the-Loop Test-Time Concept Intervention
+A fundamental operational vulnerability in deep clinical decision support is the inability of bedside practitioners to correct an erroneous intermediate inference without retraining the network. In XM-CBM, because the classifier head is strictly linear ($\hat{y} = \sigma(w^\top c_{\text{shared}} + b)$), clinicians can perform test-time counterfactual interventions. If an attending clinician identifies a spurious concept prediction (for example, motion artifact on radiograph elevating $c_6 = \text{Pulm-Edema}$), the physician can directly override the concept activation:
+$$c_{\text{shared}, k} \leftarrow c_k^\ast, \quad c_k^\ast \in [0, 1]$$
+The updated mortality risk is instantly recomputed in $\mathcal{O}(1)$ time without backpropagation:
+$$\hat{y}_{\text{intervened}} = \sigma\left(w^\top c_{\text{shared}} + b + w_k(c_k^\ast - c_{\text{shared}, k})\right)$$
+This capability empowers clinicians to perform interactive "what-if" counterfactual simulations (e.g., assessing the marginal reduction in mortality risk if aggressive fluid resuscitation resolves metabolic hypoperfusion $c_2 \to 0$).
+
+#### Missing Modality Resilience and Graceful Degradation
+In acute clinical workflows, chest radiography is frequently delayed relative to rapid point-of-care blood assays. XM-CBM natively supports missing modalities via its gated cross-attention formulation. When radiographic imaging is unacquired at triage, $c_{\text{img}}$ is initialized to a neutral null token and the gating scalar is clamped to $\alpha = 1.0$. This decouples the visual cross-attention path, enabling the model to gracefully revert to the unimodal tabular bottleneck without pipeline execution failures or out-of-distribution catastrophic collapse.
+
 ### 3.3 Faithfulness-Constrained Optimization
 
 Training this architecture requires balancing predictive accuracy with concept interpretability. We define a composite loss function:

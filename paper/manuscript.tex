@@ -161,6 +161,20 @@ $c_8$: Baseline-Fx & Chronic Comorbidity \& Frailty & Age $\ge 65$, baseline APA
 \end{tabular}
 \end{table}
 
+\subsubsection{Human-in-the-Loop Test-Time Concept Intervention}
+A fundamental operational vulnerability in conventional deep clinical decision support is the inability of bedside practitioners to correct an erroneous intermediate inference without retraining the entire network. In XM-CBM, because the classifier head is strictly linear ($\hat{y} = \sigma(w^\top c_{\text{shared}} + b_0)$), clinicians can perform test-time counterfactual interventions. If an attending physician identifies a spurious concept activation (for example, motion blur or hardware artifact erroneously elevating $c_6 = \text{Pulm-Edema}$), the physician can directly override the concept activation:
+\begin{equation}
+    c_{\text{shared}, k} \leftarrow c_k^\ast, \quad c_k^\ast \in [0, 1]
+\end{equation}
+The updated mortality risk is instantly recomputed in $\mathcal{O}(1)$ time without gradient backpropagation:
+\begin{equation}
+    \hat{y}_{\text{intervened}} = \sigma\left(w^\top c_{\text{shared}} + b_0 + w_k(c_k^\ast - c_{\text{shared}, k})\right)
+\end{equation}
+This test-time intervention capability empowers clinicians to perform interactive ``what-if'' sensitivity simulations (e.g., assessing the marginal reduction in mortality risk if aggressive fluid resuscitation resolves metabolic hypoperfusion $c_2 \to 0$), transforming the system from passive surveillance into an active therapeutic planning tool.
+
+\subsubsection{Missing Modality Resilience and Graceful Degradation}
+In acute clinical workflows, chest radiography is frequently delayed relative to rapid point-of-care blood assays. XM-CBM natively supports missing modalities via its gated cross-attention formulation. When radiographic imaging is unacquired at triage, $c_{\text{img}}$ is initialized to a neutral null token and the gating scalar is clamped to $\alpha = 1.0$. This decouples the visual cross-attention path, enabling the model to gracefully revert to the unimodal tabular bottleneck without pipeline execution failures or out-of-distribution catastrophic collapse.
+
 \subsection{Faithfulness-Constrained Optimization}
 Standard CBMs optimize solely for predictive loss, allowing intermediate concepts to function as uninterpretable information bypass channels. To prevent this, we train XM-CBM end-to-end using a composite loss function:
 \begin{equation}
