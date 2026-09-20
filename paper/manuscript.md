@@ -1,6 +1,9 @@
 # Faithful by Design: A Cross-Modal Concept Bottleneck Framework for Trustworthy Multimodal Clinical Decision Support
 
-**Authors**: [Author Names], Department of Computer Science and Engineering, [University Name]
+**Author**: Aaqib Rashid Mir  
+*Department of Computer Science and Engineering, Chandigarh University, Mohali, Punjab 140413, India*  
+*Email: mtechbro94@gmail.com*  
+*GitHub: [github.com/mtechbro94/Multimodal-Explainable-AI-for-Clinical-Decision-Support](https://github.com/mtechbro94/Multimodal-Explainable-AI-for-Clinical-Decision-Support)*  
 
 ---
 
@@ -62,6 +65,9 @@ Our goal is to learn a predictive function $f: \mathcal{X}_{\text{tab}} \times \
 ### 3.2 Proposed Architecture: XM-CBM
 
 To achieve this, we design the Cross-Modal Concept Bottleneck Model (XM-CBM). The architecture extracts modality-specific concepts, aligns them via cross-attention, and fuses them into a shared concept bottleneck.
+
+![Figure 1: XM-CBM System Architecture](figures/figure1_architecture.png)
+*Figure 1: Architectural schematic of the Cross-Modal Concept Bottleneck Model (XM-CBM). Paired tabular vitals/labs and chest radiographs are mapped to concept vectors, contextually aligned through multi-head cross-attention, compressed into a shared bottleneck ($c_{\text{shared}}$), and classified via an interpretable linear predictor.*
 
 **Tabular Concept Extraction:**
 The tabular features are processed through a multi-layer perceptron to extract a vector of tabular concepts.
@@ -174,13 +180,22 @@ The predictive and explanation performance across all baselines is summarized in
 | Late Fusion + IG | Tab+Img | 0.867±0.009 | 0.612±0.022 | 0.098±0.006 | 0.033±0.007 | 0.287±0.019 | 0.681±0.015 | 0.143±0.016 |
 | **XM-CBM (Ours)** | **Tab+Img** | **0.854±0.012** | **0.593±0.024** | **0.103±0.007** | **0.029±0.006** | **0.142±0.011** | **0.823±0.009** | **0.034±0.005** |
 
+![Figure 2: Main Benchmark Comparisons](figures/figure2_main_benchmark.png)
+*Figure 2: Comprehensive benchmark audit across 7 models: (a) AUROC discrimination, (b) Expected Calibration Error, (c) Deletion-AUC vs. Insertion-AUC, and (d) Explanation Infidelity.*
+
 Comparing XM-CBM to the Late Fusion model reveals a nominal 1.3-point AUROC gap. Black-box fusion remains marginally superior for pure prediction. But look at the faithfulness metrics. XM-CBM yields massive gains in explanation fidelity. Tree models demonstrate decent faithfulness because TreeSHAP is theoretically exact, but their predictive power is limited without imaging. The image-only models understandably underperform tabular models. A single chest radiograph alone is simply insufficient for robust mortality prediction.
+
+![Figure 3: ROC and Precision-Recall Curves](figures/figure3_roc_pr_curves.png)
+*Figure 3: Diagnostic discrimination curves across 5-fold cross-validation ($N=12,847$): (a) Receiver Operating Characteristic (ROC) and (b) Precision-Recall (PR) curves.*
 
 Multimodal fusion clearly provides a 5 to 8 AUROC point boost over the best unimodal baseline. Importantly, XM-CBM achieves the best calibration across the entire cohort (ECE 0.029). The concept bottleneck seems to act as an implicit calibrator, preventing the network from making overconfident predictions based on spurious feature combinations.
 
 ### 5.2 Faithfulness and Explanation Audit
 
 The quantitative audit fundamentally separates XM-CBM from post-hoc approaches. Why does XM-CBM dominate so comprehensively? With a Deletion-AUC of 0.142 (vs. 0.287 for IG in late fusion), the gap is hard to dismiss. The faithfulness loss explicitly and directly optimizes for the Deletion-AUC criterion during training. Furthermore, the linear predictor provides an exact concept-level decomposition of the final output. Post-hoc methods simply cannot guarantee this because they approximate the model's behavior externally. They are guessing at the reasoning; XM-CBM is explicitly constrained by it.
+
+![Figure 4: Deletion and Insertion Curves](figures/figure4_faithfulness_curves.png)
+*Figure 4: Explanation faithfulness trajectories: (a) Deletion curves (lower area indicates more faithful attribution) and (b) Insertion curves (higher area indicates faster prediction recovery).*
 
 ### 5.3 Ablation Study
 
@@ -219,6 +234,9 @@ We evaluated how explanations degrade when the input data is corrupted by noise.
 Post-hoc SHAP explanations degrade rapidly under subtle noise. At σ=0.1, the rank correlation drops alarmingly to 0.581. Only 32.8% of the top-5 features remain stable. XM-CBM, however, maintains ρ>0.87 even at this noise level. Under adversarial perturbation, the gap widens much further. The intrinsic bottleneck inherently smooths the attribution surface.
 
 ### 5.5 Qualitative Case Studies
+
+![Figure 5: Clinical Qualitative Case Studies](figures/figure5_qualitative_cases.png)
+*Figure 5: Bedside clinical case studies and concept attribution profiles: (a) Case 1 (True-Positive Sepsis with bilateral pneumonia) where positive attributions to hypoxemic failure, metabolic acidosis, and renal injury align with multi-organ collapse; and (b) Case 2 (Averting false-positive alert) where the post-operative recovery concept correctly suppresses spurious laboratory stress elevations.*
 
 **Case 1: True Positive — Sepsis with Bilateral Pneumonia**
 Consider a 72-year-old male admitted to the MICU with suspected sepsis. Vitals reflect severe stress: HR 112, SBP 84, SpO2 88%, Temperature 38.9°C. Labs show a rising Lactate of 4.2 mmol/L, PaO2/FiO2 142, WBC 18.4, and Creatinine 2.1. The chest radiograph shows dense bilateral lower lobe opacities.

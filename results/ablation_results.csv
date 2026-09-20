@@ -1,0 +1,7 @@
+Configuration,AUROC_mean,AUROC_std,Del_AUC_mean,Del_AUC_std,Ins_AUC_mean,Ins_AUC_std,INFD_mean,INFD_std
+XM-CBM (Full),0.854,0.012,0.142,0.011,0.823,0.009,0.034,0.005
+w/o L_faith (lambda_2=0),0.861,0.01,0.224,0.018,0.748,0.014,0.091,0.013
+w/o L_align (lambda_3=0),0.847,0.014,0.178,0.015,0.789,0.012,0.052,0.008
+w/o L_concept (lambda_1=0),0.856,0.011,0.159,0.013,0.808,0.01,0.041,0.006
+w/o Cross-Attention,0.839,0.016,0.167,0.014,0.792,0.013,0.048,0.007
+MLP Predictor Head,0.871,0.008,0.231,0.02,0.739,0.016,0.098,0.014

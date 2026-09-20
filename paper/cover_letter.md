@@ -40,7 +40,8 @@ Thank you for your time, consideration, and management of the peer-review proces
 
 Sincerely,
 
-**The Authors**  
+**Aaqib Rashid Mir**  
 Department of Computer Science and Engineering  
-Division of Biomedical Informatics  
-*Corresponding Author Email: corresponding.author@institution.edu*
+Chandigarh University, Mohali, Punjab 140413, India  
+*Corresponding Author Email: mtechbro94@gmail.com*  
+*GitHub: https://github.com/mtechbro94/Multimodal-Explainable-AI-for-Clinical-Decision-Support*

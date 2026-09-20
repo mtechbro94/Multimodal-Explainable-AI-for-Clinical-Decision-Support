@@ -151,15 +151,34 @@ $$\mathcal{L} = \mathcal{L}_{\text{pred}} + \lambda_1 \mathcal{L}_{\text{concept
 
 ---
 
-## 📜 Citation & License
+## 🖼️ Architecture & Benchmark Visualizations
+
+### 1. System Architecture
+![XM-CBM System Architecture](paper/figures/figure1_architecture.png)
+
+### 2. Quantitative Benchmark Performance & Faithfulness Audit
+![Main Benchmark Results](paper/figures/figure2_main_benchmark.png)
+
+### 3. Receiver Operating Characteristic & Precision-Recall Curves
+![ROC and PR Curves](paper/figures/figure3_roc_pr_curves.png)
+
+---
+
+## 📜 Author, Citation & License
+
+**Author:** **Aaqib Rashid Mir**  
+*Department of Computer Science and Engineering, Chandigarh University, Mohali, Punjab 140413, India*  
+*Email:* `mtechbro94@gmail.com`  
+*GitHub:* [github.com/mtechbro94](https://github.com/mtechbro94)  
 
 This project is licensed under the MIT License. If you use this methodology or codebase, please cite our research paper:
 
 ```bibtex
-@article{xmcbm2026,
+@article{mir2026faithful,
   title={Faithful by Design: A Cross-Modal Concept Bottleneck Framework for Trustworthy Multimodal Clinical Decision Support},
-  author={Anonymous Authors},
-  journal={Preprint / Under Review},
-  year={2026}
+  author={Mir, Aaqib Rashid},
+  journal={IEEE Transactions on Medical Imaging / IEEE Journal of Biomedical and Health Informatics (Under Review)},
+  year={2026},
+  institution={Chandigarh University}
 }
 ```

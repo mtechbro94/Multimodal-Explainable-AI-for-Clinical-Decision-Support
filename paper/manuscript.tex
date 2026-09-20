@@ -17,12 +17,12 @@
 
 \title{Faithful by Design: A Cross-Modal Concept Bottleneck Framework for Trustworthy Multimodal Clinical Decision Support}
 
-\author{Mtechbro,~et~al.
-\thanks{Mtechbro is with the Department of Computer Science and Engineering and Division of Biomedical Informatics. (e-mail: corresponding.author@institution.edu).}
-\thanks{Manuscript received September 20, 2026; revised October 15, 2026. This work was supported in part by the National Institutes of Health (NIH) and open health data initiatives.}}
+\author{Aaqib~Rashid~Mir
+\thanks{Aaqib Rashid Mir is with the Department of Computer Science and Engineering, Chandigarh University, Mohali, Punjab 140413, India (e-mail: mtechbro94@gmail.com).}
+\thanks{Manuscript received September 20, 2026; revised October 15, 2026. Source code, models, and evaluation pipelines are openly accessible at \url{https://github.com/mtechbro94/Multimodal-Explainable-AI-for-Clinical-Decision-Support}.}}
 
 \markboth{IEEE Transactions on Medical Imaging / IEEE Journal of Biomedical and Health Informatics,~Vol.~XX, No.~X,~2026}%
-{Mtechbro \MakeLowercase{\textit{et al.}}: Faithful by Design: A Cross-Modal Concept Bottleneck Framework}
+{Mir: Faithful by Design: A Cross-Modal Concept Bottleneck Framework}
 
 \IEEEtitleabstractindextext{%
 \begin{abstract}
@@ -88,14 +88,8 @@ The XM-CBM architecture, depicted schematically in Fig.~\ref{fig:architecture}, 
 
 \begin{figure*}[t]
 \centering
-\fbox{\parbox{0.95\textwidth}{\centering
-\textbf{[Figure 1: Architectural Schematic of XM-CBM]}\\[1ex]
-\small
-Tabular EHR ($x_{\text{tab}} \in \mathbb{R}^{22}$) $\xrightarrow{\text{MLP}}$ Tabular Concepts ($c_{\text{tab}} \in [0,1]^{K_t}$) $\searrow$\\[0.5ex]
-\hspace{8cm} $\xrightarrow{\text{Bidirectional Cross-Attention}}$ Fused Concepts ($c_{\text{fused}}$) $\to$ Bottleneck ($c_{\text{shared}} \in [0,1]^{K_s}$) $\xrightarrow{\text{Linear}}$ Logit $\hat{y}$\\[0.5ex]
-Chest Radiograph ($x_{\text{img}}$) $\xrightarrow{\text{DenseNet-121}}$ Image Concepts ($c_{\text{img}} \in [0,1]^{K_v}$) $\nearrow$
-}}
-\caption{System architecture of the Cross-Modal Concept Bottleneck Model (XM-CBM). Heterogeneous patient signals are projected onto interpretable clinical concept vectors, contextually aligned through multi-head cross-attention, compressed into a shared concept bottleneck, and classified via a transparent linear predictor.}
+\includegraphics[width=0.96\textwidth]{figures/figure1_architecture.png}
+\caption{System architecture of the Cross-Modal Concept Bottleneck Model (XM-CBM). Heterogeneous patient signals (tabular vitals/labs and chest radiographs) are projected onto interpretable clinical concept vectors, contextually aligned through bidirectional multi-head cross-attention, compressed into a shared concept bottleneck ($c_{\text{shared}} \in [0,1]^{K_s}$), and classified via a transparent linear predictor.}
 \label{fig:architecture}
 \end{figure*}
 
@@ -286,18 +280,39 @@ Late Fusion + IG & Tab+Img & $\mathbf{0.867 \pm 0.009}$ & $\mathbf{0.612 \pm 0.0
 \end{tabular}
 \end{table*}
 
-\subsection{Predictive Performance and Calibration}
-As presented in Table~\ref{tab:benchmark}, multimodal models significantly outperform unimodal baselines. Fusing tabular EHR with chest radiographs boosts AUROC by $+0.048$ over the best tabular model (LightGBM: $0.819 \to 0.867$) and $+0.093$ over the best vision model (ViT: $0.774 \to 0.867$). 
+\begin{figure*}[t]
+\centering
+\includegraphics[width=0.95\textwidth]{figures/figure2_main_benchmark.png}
+\caption{Comprehensive quantitative comparison across the 7 baseline and proposed models: (a) AUROC predictive discrimination, (b) Expected Calibration Error (ECE), (c) Explanation faithfulness trade-off (Deletion-AUC vs. Insertion-AUC), and (d) Explanation Infidelity ($\text{INFD}$).}
+\label{fig:benchmark}
+\end{figure*}
 
-Comparing the unconstrained black-box Late Fusion model against XM-CBM demonstrates a nominal accuracy trade-off: XM-CBM incurs a minor drop of $0.013$ in AUROC ($0.854$ vs. $0.867$) and $0.019$ in AUPRC ($0.593$ vs. $0.612$). However, XM-CBM achieves the lowest Expected Calibration Error across all tested architectures ($\text{ECE} = 0.029 \pm 0.006$). Constraining predictions through bounded concepts acts as an effective structural regularizer, mitigating the overconfidence typically exhibited by deep unconstrained networks.
+\subsection{Predictive Performance and Calibration}
+As presented in Table~\ref{tab:benchmark} and illustrated in Fig.~\ref{fig:benchmark}, multimodal models significantly outperform unimodal baselines. Fusing tabular EHR with chest radiographs boosts AUROC by $+0.048$ over the best tabular model (LightGBM: $0.819 \to 0.867$) and $+0.093$ over the best vision model (ViT: $0.774 \to 0.867$). 
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=0.95\textwidth]{figures/figure3_roc_pr_curves.png}
+\caption{Diagnostic discrimination curves across 5-fold stratified cross-validation ($N=12,847$): (a) Receiver Operating Characteristic (ROC) curves and (b) Precision-Recall (PR) curves, demonstrating that XM-CBM closely tracks unconstrained late fusion across all clinical operating thresholds.}
+\label{fig:roc_pr}
+\end{figure*}
+
+Comparing the unconstrained black-box Late Fusion model against XM-CBM demonstrates a nominal accuracy trade-off: XM-CBM incurs a minor drop of $0.013$ in AUROC ($0.854$ vs. $0.867$) and $0.019$ in AUPRC ($0.593$ vs. $0.612$) as shown in Fig.~\ref{fig:roc_pr}. However, XM-CBM achieves the lowest Expected Calibration Error across all tested architectures ($\text{ECE} = 0.029 \pm 0.006$). Constraining predictions through bounded concepts acts as an effective structural regularizer, mitigating the overconfidence typically exhibited by deep unconstrained networks.
 
 \subsection{Quantitative Faithfulness Audit}
 While predictive performance differences between multimodal models are small, interpretability auditing reveals an immense divide in explanation fidelity:
 \begin{itemize}
-    \item \textbf{Deletion-AUC:} XM-CBM achieves a Deletion-AUC of $0.142 \pm 0.011$, representing a **50.5\% reduction** compared to Late Fusion with Integrated Gradients ($0.287 \pm 0.019$). When top concepts identified by XM-CBM are removed, model output drops precipitously, proving that the explanation accurately reflects the model's actual decision criteria.
-    \item \textbf{Insertion-AUC:} Progressive concept insertion in XM-CBM yields an Insertion-AUC of $0.823 \pm 0.009$, outperforming Late Fusion ($0.681 \pm 0.015$) by **$+20.8\%$**.
+    \item \textbf{Deletion-AUC:} XM-CBM achieves a Deletion-AUC of $0.142 \pm 0.011$, representing a **50.5\% reduction** compared to Late Fusion with Integrated Gradients ($0.287 \pm 0.019$). When top concepts identified by XM-CBM are removed, model output drops precipitously (Fig.~\ref{fig:faithfulness}a), proving that the explanation accurately reflects the model's actual decision criteria.
+    \item \textbf{Insertion-AUC:} Progressive concept insertion in XM-CBM yields an Insertion-AUC of $0.823 \pm 0.009$, outperforming Late Fusion ($0.681 \pm 0.015$) by **$+20.8\%$** (Fig.~\ref{fig:faithfulness}b).
     \item \textbf{Explanation Infidelity ($\text{INFD}$):} XM-CBM achieves an infidelity score of $0.034 \pm 0.005$ versus $0.143 \pm 0.016$ for Integrated Gradients---a **76.2\% reduction in explanation error**. Post-hoc explainers introduce severe approximation noise because they perturb inputs externally without understanding internal manifold geometry.
 \end{itemize}
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=0.95\textwidth]{figures/figure4_faithfulness_curves.png}
+\caption{Explanation faithfulness dynamics: (a) Deletion trajectories (lower area denotes faster collapse under feature removal, indicating faithful attribution) and (b) Insertion trajectories (higher area denotes faster risk restoration under progressive concept insertion).}
+\label{fig:faithfulness}
+\end{figure*}
 
 \subsection{Ablation Study}
 To dissect the structural contributions of each component in XM-CBM, we executed a systematic ablation study across 5 folds (Table~\ref{tab:ablation}).
@@ -376,6 +391,13 @@ A 58-year-old female was admitted to the ICU on postoperative Day 1 following el
     \item \textbf{Late Fusion + SHAP:} Generated a high-risk alarm ($\hat{y} = 0.74$). Post-hoc TreeSHAP flagged elevated lactate and WBC as dominant risk drivers. Because the black box could not contextualize the labs against the normal vitals and non-pathologic radiograph, it generated an unfaithful false-positive alarm contributing to alarm fatigue.
     \item \textbf{XM-CBM:} Predicted low mortality risk ($\hat{y} = 0.38$). The \textit{Septic Shock / Hemodynamic Instability} concept remained unactivated ($c = 0.18$), while the cross-modal attention module correctly aligned the clear lung fields with normal vital signs, overriding isolated laboratory elevations.
 \end{itemize}
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=0.96\textwidth]{figures/figure5_qualitative_cases.png}
+\caption{Bedside clinical case studies and concept attribution profiles: (a) Case 1 (True-Positive Sepsis with bilateral pneumonia) where positive attributions to hypoxemic failure, metabolic acidosis, and renal injury align with multi-organ collapse; and (b) Case 2 (Averting false-positive alert) where the post-operative recovery concept correctly suppresses spurious laboratory stress elevations.}
+\label{fig:cases}
+\end{figure*}
 
 ---
 
