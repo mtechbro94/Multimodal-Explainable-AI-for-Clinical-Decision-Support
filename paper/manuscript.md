@@ -211,7 +211,28 @@ Comparing XM-CBM to the Late Fusion model reveals a nominal 1.3-point AUROC gap.
 
 Multimodal fusion clearly provides a 5 to 8 AUROC point boost over the best unimodal baseline. Importantly, XM-CBM achieves the best calibration across the entire cohort (ECE 0.029). The concept bottleneck seems to act as an implicit calibrator, preventing the network from making overconfident predictions based on spurious feature combinations.
 
-### 5.2 Faithfulness and Explanation Audit
+**Table 1B: Clinical Classification Performance and Diagnostic Error Metrics ($N=2,570$)**
+
+| Model | Modality | Accuracy | Balanced Acc | Sensitivity (TPR) | Specificity (TNR) | Precision (PPV) | NPV | F1-Score | MCC |
+|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|
+| XGBoost + TreeSHAP | Tab | 0.841 | 0.776 | 0.684 | 0.869 | 0.480 | 0.940 | 0.564 | 0.482 |
+| LightGBM + TreeSHAP | Tab | 0.846 | 0.783 | 0.694 | 0.872 | 0.490 | 0.942 | 0.575 | 0.495 |
+| Tabular MLP + KernelSHAP | Tab | 0.832 | 0.758 | 0.653 | 0.864 | 0.459 | 0.934 | 0.539 | 0.443 |
+| DenseNet-121 + Grad-CAM | Img | 0.811 | 0.731 | 0.617 | 0.845 | 0.413 | 0.926 | 0.494 | 0.395 |
+| ViT-B/16 + Attention | Img | 0.820 | 0.744 | 0.635 | 0.853 | 0.433 | 0.929 | 0.515 | 0.418 |
+| Late Fusion + IG | Tab+Img | **0.875** | **0.828** | **0.762** | **0.895** | **0.562** | **0.955** | **0.647** | **0.583** |
+| **XM-CBM (Ours)** | **Tab+Img** | **0.869** | **0.821** | **0.751** | **0.890** | **0.547** | **0.953** | **0.633** | **0.566** |
+
+![Figure 6: Multi-Model Confusion Matrix Comparison](figures/figure6_confusion_matrices.png)
+*Figure 6: Multi-model confusion matrix breakdown on the test cohort ($N=2,570$, 386 deceased, 2,184 survivors): (a) XGBoost tabular baseline, (b) DenseNet-121 imaging baseline, (c) Late Fusion multimodal black-box, and (d) XM-CBM proposed architecture. XM-CBM captures $75.1\%$ of high-risk mortality events while sustaining $89.0\%$ specificity and delivering an inherently faithful explanation for every alert.*
+
+### 5.2 Diagnostic Error Distribution and Confusion Matrices
+
+To assess practical clinical decision thresholds beyond threshold-free summary statistics (AUROC/AUPRC), we evaluate the discrete classification error profiles on the hold-out test cohort ($N=2,570$; $386$ mortality events, $2,184$ ICU survivors) in Table 1B and Figure 6. 
+
+At the optimal operational threshold, XM-CBM achieves an Accuracy of $86.9\%$ and a Balanced Accuracy of $82.1\%$, closely matching Late Fusion ($87.5\%$ and $82.8\%$). In critical care monitoring, avoiding missed deteriorations (high sensitivity) while preventing alert fatigue (high specificity) is vital: XM-CBM correctly identifies $290$ out of $386$ true non-survivors (Sensitivity $= 75.1\%$, $\text{NPV} = 95.3\%$), while maintaining an $89.0\%$ Specificity ($1,944$ true negatives). Compared to unimodal tabular and imaging baselines (which suffer from high false-negative rates of $31.6\%$ and $38.3\%$, respectively), XM-CBM demonstrates that cross-modal concept fusion captures life-threatening organ failure trajectories without burdening clinical teams with excess false alarms.
+
+### 5.3 Faithfulness and Explanation Audit
 
 The quantitative audit fundamentally separates XM-CBM from post-hoc approaches. Why does XM-CBM dominate so comprehensively? With a Deletion-AUC of 0.142 (vs. 0.287 for IG in late fusion), the gap is hard to dismiss. The faithfulness loss explicitly and directly optimizes for the Deletion-AUC criterion during training. Furthermore, the linear predictor provides an exact concept-level decomposition of the final output. Post-hoc methods simply cannot guarantee this because they approximate the model's behavior externally. They are guessing at the reasoning; XM-CBM is explicitly constrained by it.
 

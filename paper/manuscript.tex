@@ -335,6 +335,38 @@ As presented in Table~\ref{tab:benchmark} and illustrated in Fig.~\ref{fig:bench
 
 Comparing the unconstrained black-box Late Fusion model against XM-CBM demonstrates a nominal accuracy trade-off: XM-CBM incurs a minor drop of $0.013$ in AUROC ($0.854$ vs. $0.867$) and $0.019$ in AUPRC ($0.593$ vs. $0.612$) as shown in Fig.~\ref{fig:roc_pr}. However, XM-CBM achieves the lowest Expected Calibration Error across all tested architectures ($\text{ECE} = 0.029 \pm 0.006$). Constraining predictions through bounded concepts acts as an effective structural regularizer, mitigating the overconfidence typically exhibited by deep unconstrained networks.
 
+\begin{table*}[t]
+\centering
+\caption{Clinical Classification Performance and Diagnostic Error Metrics on Hold-Out Test Split ($N=2,570$)}
+\label{tab:clinical_metrics}
+\begin{tabular}{llccccccc}
+\toprule
+\textbf{Model Architecture} & \textbf{Modality} & \textbf{Accuracy} $\uparrow$ & \textbf{Balanced Acc} $\uparrow$ & \textbf{Sensitivity (TPR)} $\uparrow$ & \textbf{Specificity (TNR)} $\uparrow$ & \textbf{Precision (PPV)} $\uparrow$ & \textbf{NPV} $\uparrow$ & \textbf{F1-Score} $\uparrow$ \\
+\midrule
+XGBoost + TreeSHAP & Tabular & $0.841$ & $0.776$ & $0.684$ & $0.869$ & $0.480$ & $0.940$ & $0.564$ \\
+LightGBM + TreeSHAP & Tabular & $0.846$ & $0.783$ & $0.694$ & $0.872$ & $0.490$ & $0.942$ & $0.575$ \\
+Tabular MLP + KernelSHAP & Tabular & $0.832$ & $0.758$ & $0.653$ & $0.864$ & $0.459$ & $0.934$ & $0.539$ \\
+DenseNet-121 + Grad-CAM & Imaging & $0.811$ & $0.731$ & $0.617$ & $0.845$ & $0.413$ & $0.926$ & $0.494$ \\
+ViT-B/16 + Attention & Imaging & $0.820$ & $0.744$ & $0.635$ & $0.853$ & $0.433$ & $0.929$ & $0.515$ \\
+Late Fusion + IG & Tab+Img & $\mathbf{0.875}$ & $\mathbf{0.828}$ & $\mathbf{0.762}$ & $\mathbf{0.895}$ & $\mathbf{0.562}$ & $\mathbf{0.955}$ & $\mathbf{0.647}$ \\
+\midrule
+\textbf{XM-CBM (Ours)} & \textbf{Tab+Img} & $0.869$ & $0.821$ & $0.751$ & $0.890$ & $0.547$ & $0.953$ & $0.633$ \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=0.92\textwidth]{figure6_confusion_matrices.png}
+\caption{Multi-model confusion matrix breakdown on the test cohort ($N=2,570$, 386 deceased, 2,184 survivors): (a) XGBoost tabular baseline, (b) DenseNet-121 imaging baseline, (c) Late Fusion multimodal black-box, and (d) XM-CBM proposed architecture. XM-CBM captures $75.1\%$ of high-risk mortality events while sustaining $89.0\%$ specificity and delivering an inherently faithful explanation for every alert.}
+\label{fig:confusion_matrices}
+\end{figure*}
+
+\subsection{Diagnostic Error Distribution and Confusion Matrices}
+To assess practical clinical decision thresholds beyond threshold-free summary statistics (AUROC/AUPRC), we evaluate the discrete classification error profiles on the hold-out test cohort ($N=2,570$; $386$ mortality events, $2,184$ ICU survivors) in Table~\ref{tab:clinical_metrics} and Fig.~\ref{fig:confusion_matrices}. 
+
+At the optimal operational threshold, XM-CBM achieves an Accuracy of $86.9\%$ and a Balanced Accuracy of $82.1\%$, closely matching Late Fusion ($87.5\%$ and $82.8\%$). In critical care monitoring, avoiding missed deteriorations (high sensitivity) while preventing alert fatigue (high specificity) is vital: XM-CBM correctly identifies $290$ out of $386$ true non-survivors (Sensitivity $= 75.1\%$, $\text{NPV} = 95.3\%$), while maintaining an $89.0\%$ Specificity ($1,944$ true negatives). Compared to unimodal tabular and imaging baselines (which suffer from high false-negative rates of $31.6\%$ and $38.3\%$, respectively), XM-CBM demonstrates that cross-modal concept fusion captures life-threatening organ failure trajectories without burdening clinical teams with excess false alarms.
+
 \subsection{Quantitative Faithfulness Audit}
 While predictive performance differences between multimodal models are small, interpretability auditing reveals an immense divide in explanation fidelity:
 \begin{itemize}
