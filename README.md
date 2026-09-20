@@ -28,16 +28,49 @@ In Colab:
 
 ---
 
+## 🌐 Interactive Clinical Web App & Deployment
+
+We provide an interactive **Streamlit Clinical Decision Support Dashboard** (`app.py`) featuring **real-time mortality risk calculation**, **physiological concept attribution**, and **test-time human-in-the-loop intervention**:
+
+```bash
+# 1. Install dependencies
+pip install -r requirements.txt
+
+# 2. Launch interactive dashboard
+streamlit run app.py
+```
+
+### Docker Deployment (Local or On-Premise Hospital Intranet)
+```bash
+docker build -t xmcbm-clinical-app .
+docker run -d -p 8501:8501 --name xmcbm-app xmcbm-clinical-app
+```
+Then visit `http://localhost:8501`. For 1-click cloud deployment to **Streamlit Cloud** or **Hugging Face Spaces**, see [DEPLOYMENT.md](DEPLOYMENT.md).
+
+---
+
 ## 📁 Repository Structure
 
 ```
 .
+├── app.py                          # 🏥 Interactive Streamlit Clinical Decision Support App
+├── Dockerfile                      # 🐳 Production container deployment configuration
+├── DEPLOYMENT.md                   # 🚀 Complete multi-platform deployment guide
+├── requirements.txt                # 📦 Root Python dependencies for cloud deployment
 ├── notebooks/
 │   ├── XM_CBM_Full_Pipeline.ipynb   # 🌟 1-Click interactive Jupyter notebook for Colab
 │   ├── run_experiments.py          # Python cell-formatted experiment runner
 │   └── colab_setup.py              # Environment configuration & GPU helper
 ├── paper/
-│   └── manuscript.md               # 📄 Full research manuscript (~10k words, 28 IEEE citations)
+│   ├── manuscript.tex              # 📄 Publication-ready LaTeX manuscript (IEEE format)
+│   ├── manuscript.md               # 📄 Markdown manuscript with full text & citations
+│   ├── cover_letter.md             # ✉️ Journal submission cover letter with reviewers
+│   ├── highlights.md               # 📌 6 High-impact summary bullets
+│   ├── references.bib              # 📚 28 BibTeX references
+│   └── figures/                    # 🖼️ Figures 1-6 (300 DPI publication quality)
+├── results/                        # 📊 Benchmark, ablation, and clinical metric CSVs
+├── scripts/
+│   └── generate_figures_and_results.py # 🛠️ Figure & benchmark reproduction script
 ├── src/
 │   ├── data/
 │   │   ├── __init__.py
