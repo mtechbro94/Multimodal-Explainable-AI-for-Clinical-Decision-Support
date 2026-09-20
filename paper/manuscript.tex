@@ -4,6 +4,7 @@
 \usepackage{algorithmic}
 \usepackage{algorithm}
 \usepackage{graphicx}
+\graphicspath{{./}{figures/}{paper/figures/}}
 \usepackage{textcomp}
 \usepackage{xcolor}
 \usepackage{booktabs}
@@ -88,7 +89,7 @@ The XM-CBM architecture, depicted schematically in Fig.~\ref{fig:architecture}, 
 
 \begin{figure*}[t]
 \centering
-\includegraphics[width=0.96\textwidth]{figures/figure1_architecture.png}
+\includegraphics[width=0.96\textwidth]{figure1_architecture.png}
 \caption{System architecture of the Cross-Modal Concept Bottleneck Model (XM-CBM). Heterogeneous patient signals (tabular vitals/labs and chest radiographs) are projected onto interpretable clinical concept vectors, contextually aligned through bidirectional multi-head cross-attention, compressed into a shared concept bottleneck ($c_{\text{shared}} \in [0,1]^{K_s}$), and classified via a transparent linear predictor.}
 \label{fig:architecture}
 \end{figure*}
@@ -282,7 +283,7 @@ Late Fusion + IG & Tab+Img & $\mathbf{0.867 \pm 0.009}$ & $\mathbf{0.612 \pm 0.0
 
 \begin{figure*}[t]
 \centering
-\includegraphics[width=0.95\textwidth]{figures/figure2_main_benchmark.png}
+\includegraphics[width=0.95\textwidth]{figure2_main_benchmark.png}
 \caption{Comprehensive quantitative comparison across the 7 baseline and proposed models: (a) AUROC predictive discrimination, (b) Expected Calibration Error (ECE), (c) Explanation faithfulness trade-off (Deletion-AUC vs. Insertion-AUC), and (d) Explanation Infidelity ($\text{INFD}$).}
 \label{fig:benchmark}
 \end{figure*}
@@ -292,7 +293,7 @@ As presented in Table~\ref{tab:benchmark} and illustrated in Fig.~\ref{fig:bench
 
 \begin{figure*}[t]
 \centering
-\includegraphics[width=0.95\textwidth]{figures/figure3_roc_pr_curves.png}
+\includegraphics[width=0.95\textwidth]{figure3_roc_pr_curves.png}
 \caption{Diagnostic discrimination curves across 5-fold stratified cross-validation ($N=12,847$): (a) Receiver Operating Characteristic (ROC) curves and (b) Precision-Recall (PR) curves, demonstrating that XM-CBM closely tracks unconstrained late fusion across all clinical operating thresholds.}
 \label{fig:roc_pr}
 \end{figure*}
@@ -309,7 +310,7 @@ While predictive performance differences between multimodal models are small, in
 
 \begin{figure*}[t]
 \centering
-\includegraphics[width=0.95\textwidth]{figures/figure4_faithfulness_curves.png}
+\includegraphics[width=0.95\textwidth]{figure4_faithfulness_curves.png}
 \caption{Explanation faithfulness dynamics: (a) Deletion trajectories (lower area denotes faster collapse under feature removal, indicating faithful attribution) and (b) Insertion trajectories (higher area denotes faster risk restoration under progressive concept insertion).}
 \label{fig:faithfulness}
 \end{figure*}
@@ -394,7 +395,7 @@ A 58-year-old female was admitted to the ICU on postoperative Day 1 following el
 
 \begin{figure*}[t]
 \centering
-\includegraphics[width=0.96\textwidth]{figures/figure5_qualitative_cases.png}
+\includegraphics[width=0.96\textwidth]{figure5_qualitative_cases.png}
 \caption{Bedside clinical case studies and concept attribution profiles: (a) Case 1 (True-Positive Sepsis with bilateral pneumonia) where positive attributions to hypoxemic failure, metabolic acidosis, and renal injury align with multi-organ collapse; and (b) Case 2 (Averting false-positive alert) where the post-operative recovery concept correctly suppresses spurious laboratory stress elevations.}
 \label{fig:cases}
 \end{figure*}
