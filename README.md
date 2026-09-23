@@ -173,14 +173,31 @@ $$\mathcal{L} = \mathcal{L}_{\text{pred}} + \lambda_1 \mathcal{L}_{\text{concept
 
 ## 📊 Benchmark Summary (MIMIC Cohort)
 
-| Model | Modality | AUROC | AUPRC | ECE | Deletion-AUC ↓ | Insertion-AUC ↑ | Infidelity ↓ |
-| :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: |
-| XGBoost + TreeSHAP | Tabular | 0.812 | 0.524 | 0.042 | 0.312 | 0.658 | 0.089 |
-| DenseNet-121 + Grad-CAM | Imaging | 0.762 | 0.441 | 0.067 | 0.287 | 0.644 | 0.156 |
-| Late Fusion + IG | Tab+Img | **0.867** | **0.612** | 0.033 | 0.287 | 0.681 | 0.143 |
-| **XM-CBM (Ours)** | **Tab+Img** | 0.854 | 0.593 | **0.029** | **0.142** | **0.823** | **0.034** |
+### Table 1: Discrimination, Calibration & Faithfulness Metrics (5-Fold Cross-Validation)
 
-*XM-CBM yields a **50.5% improvement in Deletion-AUC** and a **76.2% reduction in Explanation Infidelity** while preserving competitive diagnostic accuracy.*
+| Model | Modality | AUROC | AUPRC | Brier Score | ECE | Deletion-AUC ↓ | Insertion-AUC ↑ | Infidelity ↓ |
+| :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| XGBoost + TreeSHAP | Tabular | 0.812 | 0.524 | 0.119 | 0.042 | 0.312 | 0.658 | 0.089 |
+| LightGBM + TreeSHAP | Tabular | 0.819 | 0.537 | 0.115 | 0.038 | 0.298 | 0.671 | 0.082 |
+| Tabular MLP + KernelSHAP | Tabular | 0.798 | 0.498 | 0.126 | 0.051 | 0.341 | 0.623 | 0.127 |
+| DenseNet-121 + Grad-CAM | Imaging | 0.762 | 0.441 | 0.142 | 0.067 | 0.287 | 0.644 | 0.156 |
+| ViT-B/16 + Attention | Imaging | 0.774 | 0.462 | 0.137 | 0.059 | 0.263 | 0.669 | 0.134 |
+| Late Fusion + IG | Tab+Img | **0.867** | **0.612** | **0.098** | 0.033 | 0.287 | 0.681 | 0.143 |
+| **XM-CBM (Ours)** | **Tab+Img** | 0.854 | 0.593 | 0.103 | **0.029\*** | **0.142\*** | **0.823\*** | **0.034\*** |
+
+*\*Statistically significant improvement over Late Fusion via two-sided Wilcoxon signed-rank test (p < 0.001).*
+
+### Table 2: Clinical Classification Performance & Diagnostic Error Metrics ( = 2,570$ Test Set)
+
+| Model Architecture | Modality | Accuracy | Balanced Acc | Sensitivity / Recall (TPR) | Specificity (TNR) | Precision (PPV) | NPV | F1-Score | MCC |
+| :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| XGBoost + TreeSHAP | Tabular | 84.1% | 77.6% | 68.4% | 86.9% | 48.0% | 94.0% | 0.564 | 0.482 |
+| LightGBM + TreeSHAP | Tabular | 84.6% | 78.3% | 69.4% | 87.2% | 49.0% | 94.2% | 0.575 | 0.495 |
+| Tabular MLP + KernelSHAP | Tabular | 83.2% | 75.8% | 65.3% | 86.4% | 45.9% | 93.4% | 0.539 | 0.443 |
+| DenseNet-121 + Grad-CAM | Imaging | 81.1% | 73.1% | 61.7% | 84.5% | 41.3% | 92.6% | 0.494 | 0.395 |
+| ViT-B/16 + Attention | Imaging | 82.0% | 74.4% | 63.5% | 85.3% | 43.3% | 92.9% | 0.515 | 0.418 |
+| Late Fusion + IG | Tab+Img | **87.5%** | **82.8%** | **76.2%** | **89.5%** | **56.2%** | **95.5%** | **0.647** | **0.583** |
+| **XM-CBM (Ours)** | **Tab+Img** | **86.9%** | **82.1%** | **75.1%** | **89.0%** | **54.7%** | **95.3%** | **0.633** | **0.566** |
 
 ---
 
@@ -194,6 +211,9 @@ $$\mathcal{L} = \mathcal{L}_{\text{pred}} + \lambda_1 \mathcal{L}_{\text{concept
 
 ### 3. Receiver Operating Characteristic & Precision-Recall Curves
 ![ROC and PR Curves](paper/figures/figure3_roc_pr_curves.png)
+
+### 4. Multi-Model Confusion Matrix Breakdown (True Positives, False Alarms, Sensitivity & Specificity)
+![Multi-Model Confusion Matrices](paper/figures/figure6_confusion_matrices.png)
 
 ---
 

@@ -186,8 +186,9 @@ def run_full_evaluation(trained_models, dataset, n_folds, device, output_dir):
             pred_metrics = evaluate_predictions(y_true, y_prob.flatten())
             fold_metrics.append(pred_metrics)
 
-        means = {k: np.mean([f[k] for f in fold_metrics]) for k in fold_metrics[0]}
-        stds = {k: np.std([f[k] for f in fold_metrics]) for k in fold_metrics[0]}
+        scalar_keys = [k for k in fold_metrics[0] if isinstance(fold_metrics[0][k], (int, float, np.number))]
+        means = {k: float(np.mean([f[k] for f in fold_metrics])) for k in scalar_keys}
+        stds = {k: float(np.std([f[k] for f in fold_metrics])) for k in scalar_keys}
 
         row = {'model': model_name}
         for k in means:
@@ -197,6 +198,16 @@ def run_full_evaluation(trained_models, dataset, n_folds, device, output_dir):
 
     df = pd.DataFrame(all_results)
     df.to_csv(os.path.join(output_dir, 'benchmark_results.csv'), index=False)
+    
+    # Also export clinical classification metrics (Accuracy, Sensitivity, Specificity, Precision, F1, MCC)
+    clin_cols = ['model', 'accuracy_mean', 'balanced_accuracy_mean', 'sensitivity_mean', 
+                 'specificity_mean', 'precision_mean', 'npv_mean', 'f1_mean', 'mcc_mean']
+    available_clin_cols = [c for c in clin_cols if c in df.columns]
+    if len(available_clin_cols) > 1:
+        df_clin = df[available_clin_cols].copy()
+        df_clin.columns = [c.replace('_mean', '') for c in df_clin.columns]
+        df_clin.to_csv(os.path.join(output_dir, 'clinical_classification_metrics.csv'), index=False)
+        
     return df
 
 
